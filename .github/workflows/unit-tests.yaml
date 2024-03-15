@@ -4,8 +4,29 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-on-github:
     runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: yarn
+
+      - name: Install dependencies
+        run: |
+          yarn install --inline-builds
+          yarn prisma generate
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+          YARN_NM_MODE: "hardlinks-local"
+          HUSKY: "0"
+
+      - run: yarn test
+
+  test-on-depot:
+    runs-on: depot-ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
